@@ -895,6 +895,46 @@ public void takeRisk() throws BadException {
 * Handle or Declare. It’s the law.  
 * A try block should either be followed by a catch or finally block.
 
+
+### 1. **Checked Exceptions**
+- **Definition**: Exceptions that are checked at compile time.
+- **Characteristics**: 
+  - Subclasses of `Exception` (but not `RuntimeException`).
+  - Must be handled using a `try-catch` block or declared using `throws`.
+  - Typically used for external conditions (e.g., I/O errors, network failures).
+- **Examples**: `IOException`, `SQLException`, `FileNotFoundException`.
+
+### 2. **Unchecked Exceptions**
+- **Definition**: Exceptions that are not checked at compile time.
+- **Characteristics**:
+  - Subclasses of `RuntimeException`.
+  - The compiler does not require handling or declaring.
+  - Typically used for programming errors (e.g., null pointer, arithmetic errors).
+- **Examples**: `NullPointerException`, `ArithmeticException`, `ArrayIndexOutOfBoundsException`.
+
+#### Key Differences
+
+| **Feature**                | **Checked Exceptions**                           | **Unchecked Exceptions**                        |
+|----------------------------|--------------------------------------------------|------------------------------------------------|
+| **Superclass**              | Subclass of `Exception` (not `RuntimeException`) | Subclass of `RuntimeException`                 |
+| **Compilation Requirement** | Must be caught or declared with `throws`        | Not required to be caught or declared         |
+| **Examples**                | `IOException`, `SQLException`                   | `NullPointerException`, `ArithmeticException`  |
+
+```java
+// Checked Exception
+public static void readFile() throws IOException {
+    FileReader file = new FileReader("file.txt");
+    BufferedReader fileInput = new BufferedReader(file);
+    System.out.println(fileInput.readLine());
+    fileInput.close();
+}
+
+// Unchecked Exception
+public static void divideNumbers() {
+    int result = 10 / 0; // Throws ArithmeticException
+}
+```
+
 ## Event Handling , Inner class and Lambdas
 * The process of getting and handling a user event is called event-handling.
 * A listener interface is the bridge between the listener (you) and event source (the button). 
