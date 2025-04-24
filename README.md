@@ -1368,28 +1368,95 @@ The most common structure for Java projects is based off Maven’s* convention:
 
 ```
 
-* Enums 
--  can add a bunch of things to your enum like a constructor, methods, variables, 
-and something called a constant-specific class body
+### Enums 
+ - Stores fields ✅
+
+ - Has a constructor ✅
+ 
+ - Implements an interface ✅
+
+ - Has abstract methods ✅
+
+ - Overrides methods per constant ✅
+
+ - Has static and instance methods ✅
+
+ - Loops over values
 ```
- public enum Member { KEVIN, BOB, STUART };
 
- public class SomeClass { 
-  public Member selectedBandMember;
+// 1. Interface for role behavior
+interface AccessControl {
+    void describePermissions();
+}
 
-  void someMethod() {
-    if (selectedBandMember == Member.KEVIN) {
-      // do KEVIN related stuff
+// 2. Enum that behaves like a class
+public enum UserRole implements AccessControl {
+    ADMIN("Admin", 10) {
+        @Override
+        public void describePermissions() {
+            System.out.println("ADMIN: Full access to everything.");
+        }
+
+        @Override
+        public boolean canEditUsers() {
+            return true;
+        }
+    },
+    EDITOR("Editor", 5) {
+        @Override
+        public void describePermissions() {
+            System.out.println("EDITOR: Can edit content, but not users.");
+        }
+
+        @Override
+        public boolean canEditUsers() {
+            return false;
+        }
+    },
+    VIEWER("Viewer", 1) {
+        @Override
+        public void describePermissions() {
+            System.out.println("VIEWER: Can only view content.");
+        }
+
+        @Override
+        public boolean canEditUsers() {
+            return false;
+        }
+    };
+
+    // 3. Fields
+    private final String displayName;
+    private final int accessLevel;
+
+    // 4. Constructor
+    private UserRole(String displayName, int accessLevel) {
+        this.displayName = displayName;
+        this.accessLevel = accessLevel;
     }
 
-      switch (member) {
-    case KEVIN: System.out.print("Uh... la cucaracha?");
-    case BOB: System.out.println("King Bob");
-    case STUART: System.out.print("Banana!");
-  }
+    // 5. Common method
+    public String getDisplayName() {
+        return displayName;
+    }
 
-  }
- }
+    public int getAccessLevel() {
+        return accessLevel;
+    }
+
+    // 6. Abstract method — each constant must override
+    public abstract boolean canEditUsers();
+
+    // 7. Static utility method
+    public static UserRole fromDisplayName(String name) {
+        for (UserRole role : values()) {
+            if (role.displayName.equalsIgnoreCase(name)) {
+                return role;
+            }
+        }
+        return null;
+    }
+}
 
 ```
 * Local Variable Type Inference (var) - it is not dynamic type
