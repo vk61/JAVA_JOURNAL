@@ -1267,6 +1267,172 @@ of which are holding a key the other thread wants.
 *  Since synchronization can come with some costs like performance and potential deadlocks.
 * Atomic variables - 
   If the shared data is an int, long, or boolean, we might be able to replace it with an atomic variable. These classes provide methods that are atomic, i.e., can safely be used by a thread without worrying about another thread changing the object’s values at the same time. There are few types of atomic variable, e.g., AtomicInteger, AtomicLong, AtomicBoolean, and AtomicReference. 
+
+
+In multi-threaded programming, when multiple threads try to access shared resources concurrently, **race conditions** may occur. Race conditions can cause **incorrect behavior** and bugs that are hard to debug. To prevent this, Java provides the `synchronized` keyword, which ensures that only **one thread at a time** can access a critical section of code that is shared by multiple threads.
+
+
+
+## 🔑 What is the `synchronized` Keyword?
+
+The `synchronized` keyword in Java is used to control access to a method or block of code by multiple threads. When a method or block of code is marked as `synchronized`, only one thread can execute it at a time for a specific object or class.
+
+The basic idea behind `synchronized` is to **lock** an object or class so that no other thread can access it while it's being used by another thread.
+
+---
+
+## 🧐 Why Use `synchronized`?
+
+Java uses `synchronized` to achieve **mutual exclusion** (mutex), meaning that only one thread can access the shared resource at a time, preventing data corruption. Here's why you should use `synchronized`:
+
+1. **Prevent Race Conditions**: Multiple threads accessing shared data can lead to **race conditions**, where the output depends on the timing of thread execution, leading to inconsistent or incorrect results.
+
+2. **Thread Safety**: Ensures that shared resources are accessed in a controlled, thread-safe manner, preventing conflicts between threads.
+
+3. **Data Integrity**: Protects data from being modified concurrently by multiple threads, ensuring data integrity.
+
+---
+
+## 🛠️ How to Use `synchronized`
+
+### 🏷️ Synchronizing a Method
+
+A synchronized method locks on the instance of the object the method belongs to (or the class, if the method is static).
+
+```java
+public synchronized void incrementCounter() {
+    counter++;
+}
+```
+
+- **Instance Method**: Locks on the current instance (`this`).
+- **Static Method**: Locks on the `Class` object (`ClassName.class`).
+
+```java
+public synchronized static void updateStaticData() {
+    staticData++;
+}
+```
+
+**Example:**
+
+```java
+class Counter {
+    private int count = 0;
+
+    public synchronized void increment() {
+        count++;
+    }
+
+    public synchronized int getCount() {
+        return count;
+    }
+}
+```
+
+### 🏷️ Synchronizing a Block of Code
+
+Instead of synchronizing an entire method, you can synchronize a **specific block of code**. This is especially useful when you want to limit the scope of synchronization for performance reasons.
+
+```java
+public void updateSharedData() {
+    synchronized (this) {
+        // critical section
+    }
+}
+```
+
+**Example:**
+
+```java
+class SharedResource {
+    private int data = 0;
+
+    public void updateData() {
+        synchronized (this) {
+            data++;
+        }
+    }
+}
+```
+
+Here, only the critical section inside the synchronized block is locked, while the rest of the method can execute without synchronization.
+
+---
+
+## 🔐 Types of Locks
+
+- **Instance Locks**: When you use `synchronized` on an instance method, the thread locks the **instance of the object**. Multiple threads can still access different instances simultaneously.
+
+- **Class Locks**: When `synchronized` is used on a static method or a block of code that uses `ClassName.class` as the lock object, it locks on the **class object**. This ensures that only one thread can access the static resource at a time across all instances of the class.
+
+---
+
+## 🧵 `synchronized` and Multi-threading
+
+When multiple threads need to access shared data concurrently, they need to synchronize their actions to avoid data corruption. The `synchronized` keyword provides a simple way to ensure that only one thread at a time can access a critical section of the code.
+
+For example, consider this scenario where two threads try to increment a counter:
+
+```java
+public class Counter {
+    private int counter = 0;
+
+    public synchronized void increment() {
+        counter++;
+    }
+}
+```
+
+If two threads call the `increment()` method simultaneously, **only one thread** will be able to execute the method at a time, thanks to the `synchronized` keyword. This ensures that the counter will not be corrupted.
+
+---
+
+## 💡 The `volatile` Keyword and `synchronized`
+
+While `synchronized` ensures that threads **don’t interfere** with each other when accessing shared data, the `volatile` keyword ensures that changes to a variable made by one thread are immediately visible to other threads.
+
+- **`synchronized`** ensures mutual exclusion, protecting data from being accessed concurrently.
+- **`volatile`** ensures visibility, ensuring that updates to a variable are reflected immediately across threads.
+
+Both `synchronized` and `volatile` are often used together when you need to ensure both **mutual exclusion** and **visibility**.
+
+---
+
+## 📉 Performance Impact of `synchronized`
+
+While `synchronized` is essential for thread safety, it has a **performance cost**:
+
+1. **Lock Contention**: If multiple threads are trying to access the same synchronized method or block, they will have to wait for the lock to be released, which leads to performance degradation.
+   
+2. **Context Switching**: When threads are blocked waiting for a lock, the operating system may switch between threads, which adds overhead.
+
+3. **Granularity**: The larger the synchronized block, the greater the chance that threads will be blocked, reducing concurrency.
+
+**Best Practice:** Minimize the size of synchronized blocks to ensure better concurrency. Use synchronization only around the critical section of the code.
+
+---
+
+## 🔄 Alternatives to `synchronized`
+
+While `synchronized` is useful, there are alternative approaches for **more granular control over concurrency**:
+
+1. **`ReentrantLock`**: Part of the `java.util.concurrent` package, `ReentrantLock` allows you to lock and unlock manually, providing more control over locking.
+
+2. **`ReadWriteLock`**: Allows multiple threads to read the resource, but only one thread can write to it, making it suitable for scenarios where reads are more frequent than writes.
+
+3. **Atomic Variables**: The `java.util.concurrent.atomic` package provides classes like `AtomicInteger`, `AtomicLong`, and `AtomicReference` that allow you to perform atomic operations without needing explicit synchronization.
+
+---
+
+## ⚠️ Common Pitfalls with `synchronized`
+
+1. **Deadlocks**: If two threads are each waiting for a lock that the other holds, they will be stuck indefinitely. Be mindful of the order in which locks are acquired to avoid this.
+
+2. **Over-synchronization**: Locking too much code or unnecessary synchronization can degrade performance. Only synchronize what’s necessary.
+
+3. **Thread Starvation**: When some threads are locked out of critical sections for too long, they may not get a chance to execute. Use techniques like fair locking to mitigate this.
+
 * NO NEED TO ADD SYNCHRONIZED KEYWORD WHEN USING ATOMIC OPERTATIONS.
 ```
  class Balance {
